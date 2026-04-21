@@ -2,23 +2,7 @@
 
 ## 📌 摘要
 
-#### 1.2.1 流程图（Mermaid）
 
-```mermaid
-flowchart TD
-    A[输入: 原始 robot trajectory\n每段 episode 的 task description] --> B[Step 1: 提取 motion language\n程序化从轨迹中抽取动作方向/运动描述]
-    B --> C[Step 2: 识别 task-relevant objects\nMolmoE-1B-0924\n输入: task name + scene\n输出: 最多4个相关物体名]
-    C --> D[Step 3: 物体初始定位\nMolmo-7B-D-0924\n输入: 首帧图像 + 物体名\n输出: 首帧 object coordinates]
-    D --> E[Step 4: 时序传播\nSAM2\n输入: 首帧 object points / masks + trajectory video\n输出: temporally-consistent segmentation masks\n和 open-vocabulary bounding boxes]
-    B --> F[Step 5: gripper trace 提取\n人工标注100张 Bridge 图像中的 gripper position\n微调 lightweight DETR\n输出: 全数据集 gripper centroids / traces]
-    E --> G[Step 6: 后处理与统一表示\n过滤 task-irrelevant objects\n坐标转成 <loc>\nsegmentation 转成 <loc><seg> token]
-    F --> G
-    B --> H[Step 7: subtask decomposition\nGemini 2.0\n输入: overall task + motions + objects\n输出: semantic subtasks]
-    G --> H
-    H --> I[Step 8: steering command generation\nGemini 2.0\n输入: 每个 subtask + motions + gripper traces + object centroids / bboxes\n输出: task / subtask / motion / point / trace / combination commands]
-    H --> J[Step 9: rationalization generation\nGemini 2.0\n输入: subtask 起始 observation + overall/past subtasks + current subtask\n输出: 为什么当前该执行这个 subtask/command 的 post-hoc rationale]
-    I --> K[Step 10: 训练 low-level Steerable Policy\n训练时随机用 steering commands 替换标准 task label]
-    J --> L[Step 11: 训练 high-level embodied reasoner\n学习输出 reasoning + steering command]
 
 本报告详细说明了机器人数据采集质量 baseline 的制定方法和统计学依据。我们提出以下两个质量阈值：
 
